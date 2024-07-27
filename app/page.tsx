@@ -228,8 +228,6 @@ export default function Home() {
                     value={[parseInt(spendAmount)]}
                     onValueChange={(value) => setSpendAmount(value[0].toString())}
                     className="w-full h-12"
-                    trackClassName="bg-[#F5DEB3]"
-                    thumbClassName="w-8 h-8 bg-[#8B4513]"
                   />
                   <div className="absolute inset-0 pointer-events-none">
                     {[...Array(16)].map((_, i) => (
@@ -252,8 +250,6 @@ export default function Home() {
                     value={[parseInt(incomeAmount)]}
                     onValueChange={(value) => setIncomeAmount(value[0].toString())}
                     className="w-full h-12"
-                    trackClassName="bg-[#F5DEB3]"
-                    thumbClassName="w-8 h-8 bg-[#8B4513]"
                   />
                   <div className="absolute inset-0 pointer-events-none">
                     {[...Array(16)].map((_, i) => (
