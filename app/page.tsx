@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import cx from 'clsx'
 
 // Critical information for gameplay:
 // - Current round
 // - Current player's turn
 // - Each player's current money
 // - Spend action
+// - Income action
 // - End turn action
 //
 // Less critical information:
@@ -23,6 +25,7 @@ interface Action {
   player: Player;
   type: ActionType;
   amount: number;
+  round: number;
 }
 
 export default function Home() {
@@ -30,6 +33,7 @@ export default function Home() {
   const [actionLog, setActionLog] = useState<Action[]>([]);
   const [currentTurn, setCurrentTurn] = useState<Player>('Player 1');
   const [spendAmount, setSpendAmount] = useState<string>('');
+  const [incomeAmount, setIncomeAmount] = useState<string>('');
   const [currentRound, setCurrentRound] = useState<number>(1);
   const [turnOrder, setTurnOrder] = useState<Player[]>(players);
   const [playerIncomes, setPlayerIncomes] = useState<Record<Player, number>>({
@@ -38,6 +42,10 @@ export default function Home() {
     'Player 3': 0,
     'Player 4': 0
   });
+  const [expandedPlayer, setExpandedPlayer] = useState<Player | null>(null);
+  const togglePlayerInfo = (player: Player) => {
+    setExpandedPlayer(expandedPlayer === player ? null : player);
+  };
 
   const getPlayerMoney = (player: Player) => {
     return actionLog.reduce((total, action) => {
@@ -75,7 +83,8 @@ export default function Home() {
     const incomeActions = players.map(player => ({
       player,
       type: 'income' as ActionType,
-      amount: playerIncomes[player]
+      amount: playerIncomes[player],
+      round: currentRound
     }));
     setActionLog(prevLog => [...prevLog, ...incomeActions]);
 
@@ -92,19 +101,35 @@ export default function Home() {
     if (isNaN(amount) || amount <= 0) return;
 
     const currentPlayerMoney = getPlayerMoney(currentTurn);
-    if (amount > currentPlayerMoney + 10) {
-      alert(`You can't spend more than £${currentPlayerMoney + 10}!`);
+    if (amount > currentPlayerMoney) {
+      alert(`You can't spend more than £${currentPlayerMoney}!`);
       return;
     }
 
     const newAction: Action = {
       player: currentTurn,
       type: 'spend',
-      amount: amount
+      amount: amount,
+      round: currentRound
     };
 
     setActionLog(prevLog => [...prevLog, newAction]);
     setSpendAmount('');
+  };
+
+  const handleIncome = () => {
+    const amount = parseInt(incomeAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
+    const newAction: Action = {
+      player: currentTurn,
+      type: 'income',
+      amount: amount,
+      round: currentRound
+    };
+
+    setActionLog(prevLog => [...prevLog, newAction]);
+    setIncomeAmount('');
   };
 
   const handleEndTurn = () => {
@@ -122,70 +147,103 @@ export default function Home() {
       alert("Income can't be less than -10!");
       return;
     }
-    setPlayerIncomes(prev => ({...prev, [player]: income}));
+    setPlayerIncomes(prev => ({ ...prev, [player]: income }));
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <header className="bg-blue-600 text-white p-4">
-          <h1 className="text-2xl font-bold">Brass: Lancashire Money Tracker</h1>
-          <p className="text-lg">Round {currentRound} - {currentTurn}'s Turn</p>
+    <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden">
+        <header className="bg-[#8B4513] text-[#F5DEB3] p-6">
+          <h1 className="text-3xl font-bold">Brass: Lancashire Money Tracker</h1>
+          <p className="text-xl">Round {currentRound} - {currentTurn}'s Turn</p>
         </header>
 
-        <main className="p-4">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Player Money</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {players.map(player => (
-                <div key={player} className="bg-gray-200 p-2 rounded">
-                  <span className="font-medium">{player}:</span> £{getPlayerMoney(player)}
-                </div>
-              ))}
-            </div>
+        <main className="p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            {players.map(player => (
+              <div key={player} className={cx(
+                "p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer",
+                {
+                  "bg-[#D2B48C]": player !== currentTurn,
+                  "bg-[#90EE90]": player === currentTurn
+                }
+              )} onClick={() => togglePlayerInfo(player)}>
+                <h3 className="text-xl font-semibold mb-2">{player}</h3>
+                <p className="text-3xl font-bold">£{getPlayerMoney(player)}</p>
+                <p className="text-sm text-gray-600">Income: £{playerIncomes[player]}</p>
+                {expandedPlayer === player && (
+                  <div className="mt-4 bg-[#F5DEB3] p-2 rounded animate-expand">
+                    <h4 className="font-semibold mb-2">Actions:</h4>
+                    <ul className="text-sm">
+                      {actionLog.filter(action => action.player === player).map((action, index) => (
+                        <li key={index} className="mb-1">
+                          Round {action.round}: {action.type} £{action.amount}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Spend Money</h2>
+          <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
+            <h2 className="text-2xl font-semibold mb-4">Spend Money</h2>
             <div className="flex">
               <Input
                 type="number"
                 value={spendAmount}
                 onChange={(e) => setSpendAmount(e.target.value)}
                 placeholder="Amount"
-                className="mr-2 flex-grow"
+                className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
               />
-              <Button onClick={handleSpend} className="bg-green-500 text-white">Spend</Button>
+              <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Spend</Button>
             </div>
           </div>
 
-          <Button onClick={handleEndTurn} className="w-full bg-blue-500 text-white mb-6">End Turn</Button>
-
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Player Incomes</h2>
-            {players.map(player => (
-              <div key={player} className="flex items-center mb-2">
-                <span className="mr-2">{player}:</span>
-                <Input
-                  type="number"
-                  value={playerIncomes[player]}
-                  onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
-                  className="w-20"
-                />
-              </div>
-            ))}
+          <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
+            <h2 className="text-2xl font-semibold mb-4">Add Income</h2>
+            <div className="flex">
+              <Input
+                type="number"
+                value={incomeAmount}
+                onChange={(e) => setIncomeAmount(e.target.value)}
+                placeholder="Amount"
+                className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
+              />
+              <Button onClick={handleIncome} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Add Income</Button>
+            </div>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Action Log</h2>
-            <ul className="bg-gray-100 p-2 rounded max-h-40 overflow-y-auto">
+          <Button onClick={handleEndTurn} className="w-full bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] mb-6 py-3 text-xl">End Turn</Button>
+
+          <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
+            <h2 className="text-2xl font-semibold mb-4">Player Incomes</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {players.map(player => (
+                <div key={player} className="flex flex-col items-center">
+                  <span className="mb-2">{player}</span>
+                  <Input
+                    type="number"
+                    value={playerIncomes[player]}
+                    onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
+                    className="w-20 bg-[#F5DEB3] border-[#8B4513]"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold mb-4">Action Log</h2>
+            <ul className="bg-[#F5DEB3] p-4 rounded max-h-60 overflow-y-auto">
               {actionLog.slice().reverse().map((action, index) => (
-                <li key={index} className="mb-1">
-                  {action.player} - {action.type}: £{action.amount}
+                <li key={index} className="mb-2 p-2 bg-[#D2B48C] rounded">
+                  <span className="font-semibold">{action.player}</span> - {action.type}: £{action.amount}
                 </li>
               ))}
             </ul>
-            <Button onClick={undoLastAction} className="mt-2 bg-red-500 text-white">Undo Last Action</Button>
+            <Button onClick={undoLastAction} className="mt-4 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Undo Last Action</Button>
           </div>
         </main>
       </div>
