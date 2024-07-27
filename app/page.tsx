@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import cx from 'clsx'
@@ -44,6 +44,13 @@ export default function Home() {
   });
   const [expandedPlayer, setExpandedPlayer] = useState<Player | null>(null);
   const [showRoundInfo, setShowRoundInfo] = useState<boolean>(false);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   const togglePlayerInfo = (player: Player) => {
     setExpandedPlayer(expandedPlayer === player ? null : player);
@@ -163,8 +170,14 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden">
+    <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay overflow-hidden" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden relative">
+        <Button
+          onClick={handleEndTurn}
+          className="absolute top-4 right-4 z-10 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-sm px-3 py-1 rounded-full shadow-lg"
+        >
+          End Turn
+        </Button>
         <header className="bg-[#8B4513] text-[#F5DEB3] p-6 relative cursor-pointer" onClick={() => setShowRoundInfo(!showRoundInfo)}>
           {showRoundInfo && (
             <div className="absolute top-full left-0 right-0 bg-[#A0522D] p-4 rounded-b-lg shadow-md z-10">
@@ -175,7 +188,7 @@ export default function Home() {
           )}
         </header>
 
-        <main className="p-6">
+        <main className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 100px)' }}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             {turnOrder.map(player => (
               <div key={player} className={cx(
@@ -205,30 +218,86 @@ export default function Home() {
           </div>
 
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
-            <div className="flex">
-              <Input
-                type="tel"
-                value={spendAmount}
-                onChange={(e) => setSpendAmount(e.target.value)}
-                placeholder="spend money"
-                className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
-              />
+            <div className="flex flex-col mb-4">
+              <div className="flex items-center w-full mb-2">
+                <div className="w-full mr-2 relative">
+                  <input
+                    type="range"
+                    min="0"
+                    max="15"
+                    step="1"
+                    value={spendAmount}
+                    onChange={(e) => setSpendAmount(e.target.value)}
+                    className="w-full h-8 bg-[#F5DEB3] rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      WebkitAppearance: 'none',
+                      appearance: 'none'
+                    }}
+                  />
+                  <style jsx>{`
+                    input[type='range']::-webkit-slider-thumb {
+                      -webkit-appearance: none;
+                      appearance: none;
+                      width: 25px;
+                      height: 25px;
+                      background: #8B4513;
+                      cursor: pointer;
+                      border-radius: 50%;
+                    }
+                    input[type='range']::-moz-range-thumb {
+                      width: 25px;
+                      height: 25px;
+                      background: #8B4513;
+                      cursor: pointer;
+                      border-radius: 50%;
+                    }
+                  `}</style>
+                  <div className="absolute inset-0 pointer-events-none">
+                    {[...Array(16)].map((_, i) => (
+                      <div key={i} className="absolute h-full w-1 bg-[#8B4513] opacity-20" style={{ left: `${i * (100 / 15)}%` }}></div>
+                    ))}
+                  </div>
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#8B4513] opacity-50 rounded-l-lg"
+                    style={{ width: `${(parseInt(spendAmount) / 15) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{spendAmount}</span>
+              </div>
               <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Spend</Button>
             </div>
 
-            <div className="flex">
-              <Input
-                type="tel"
-                value={incomeAmount}
-                onChange={(e) => setIncomeAmount(e.target.value)}
-                placeholder="income"
-                className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
-              />
+            <div className="flex flex-col">
+              <div className="flex items-center w-full mb-2">
+                <div className="w-full mr-2 relative">
+                  <input
+                    type="range"
+                    min="0"
+                    max="15"
+                    step="1"
+                    value={incomeAmount}
+                    onChange={(e) => setIncomeAmount(e.target.value)}
+                    className="w-full h-8 bg-[#F5DEB3] rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      WebkitAppearance: 'none',
+                      appearance: 'none'
+                    }}
+                  />
+                  <div className="absolute inset-0 pointer-events-none">
+                    {[...Array(16)].map((_, i) => (
+                      <div key={i} className="absolute h-full w-1 bg-[#8B4513] opacity-20" style={{ left: `${i * (100 / 15)}%` }}></div>
+                    ))}
+                  </div>
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#8B4513] opacity-50 rounded-l-lg"
+                    style={{ width: `${(parseInt(incomeAmount) / 15) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{incomeAmount}</span>
+              </div>
               <Button onClick={handleIncome} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Add Income</Button>
             </div>
           </div>
-
-          <Button onClick={handleEndTurn} className="w-full bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] mb-6 py-3 text-xl">End Turn</Button>
 
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
             <h2 className="text-2xl font-semibold mb-4">Player Incomes</h2>
