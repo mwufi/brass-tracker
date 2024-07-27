@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {Slider} from '@/components/ui/slider'
 import cx from 'clsx'
 
 // Critical information for gameplay:
@@ -221,46 +222,21 @@ export default function Home() {
             <div className="flex flex-col mb-4">
               <div className="flex items-center w-full mb-2">
                 <div className="w-full mr-2 relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max="15"
-                    step="1"
-                    value={spendAmount}
-                    onChange={(e) => setSpendAmount(e.target.value)}
-                    className="w-full h-8 bg-[#F5DEB3] rounded-lg appearance-none cursor-pointer"
-                    style={{
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
-                    }}
+                  <Slider
+                    min={0}
+                    max={15}
+                    step={1}
+                    value={[parseInt(spendAmount)]}
+                    onValueChange={(value) => setSpendAmount(value[0].toString())}
+                    className="w-full h-12"
+                    trackClassName="bg-[#F5DEB3]"
+                    thumbClassName="w-8 h-8 bg-[#8B4513]"
                   />
-                  <style jsx>{`
-                    input[type='range']::-webkit-slider-thumb {
-                      -webkit-appearance: none;
-                      appearance: none;
-                      width: 25px;
-                      height: 25px;
-                      background: #8B4513;
-                      cursor: pointer;
-                      border-radius: 50%;
-                    }
-                    input[type='range']::-moz-range-thumb {
-                      width: 25px;
-                      height: 25px;
-                      background: #8B4513;
-                      cursor: pointer;
-                      border-radius: 50%;
-                    }
-                  `}</style>
                   <div className="absolute inset-0 pointer-events-none">
                     {[...Array(16)].map((_, i) => (
                       <div key={i} className="absolute h-full w-1 bg-[#8B4513] opacity-20" style={{ left: `${i * (100 / 15)}%` }}></div>
                     ))}
                   </div>
-                  <div
-                    className="absolute top-0 left-0 h-full bg-[#8B4513] opacity-50 rounded-l-lg"
-                    style={{ width: `${(parseInt(spendAmount) / 15) * 100}%` }}
-                  ></div>
                 </div>
                 <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{spendAmount}</span>
               </div>
@@ -270,28 +246,21 @@ export default function Home() {
             <div className="flex flex-col">
               <div className="flex items-center w-full mb-2">
                 <div className="w-full mr-2 relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max="15"
-                    step="1"
-                    value={incomeAmount}
-                    onChange={(e) => setIncomeAmount(e.target.value)}
-                    className="w-full h-8 bg-[#F5DEB3] rounded-lg appearance-none cursor-pointer"
-                    style={{
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
-                    }}
+                  <Slider
+                    min={0}
+                    max={15}
+                    step={1}
+                    value={[parseInt(incomeAmount)]}
+                    onValueChange={(value) => setIncomeAmount(value[0].toString())}
+                    className="w-full h-12"
+                    trackClassName="bg-[#F5DEB3]"
+                    thumbClassName="w-8 h-8 bg-[#8B4513]"
                   />
                   <div className="absolute inset-0 pointer-events-none">
                     {[...Array(16)].map((_, i) => (
                       <div key={i} className="absolute h-full w-1 bg-[#8B4513] opacity-20" style={{ left: `${i * (100 / 15)}%` }}></div>
                     ))}
                   </div>
-                  <div
-                    className="absolute top-0 left-0 h-full bg-[#8B4513] opacity-50 rounded-l-lg"
-                    style={{ width: `${(parseInt(incomeAmount) / 15) * 100}%` }}
-                  ></div>
                 </div>
                 <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{incomeAmount}</span>
               </div>
