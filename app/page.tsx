@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {Slider} from '@/components/ui/slider'
+import { Slider } from '@/components/ui/slider'
 import cx from 'clsx'
 
 // Critical information for gameplay:
@@ -19,7 +19,7 @@ import cx from 'clsx'
 // - Detailed action log
 // - Undo functionality (useful but not essential)
 
-type Player = 'Player 1' | 'Player 2' | 'Player 3' | 'Player 4';
+type Player = 'Player 1' | 'Player 2' | 'Player 3';
 type ActionType = 'spend' | 'income';
 
 interface Action {
@@ -30,7 +30,7 @@ interface Action {
 }
 
 export default function Home() {
-  const [players] = useState<Player[]>(['Player 1', 'Player 2', 'Player 3', 'Player 4']);
+  const [players] = useState<Player[]>(['Player 1', 'Player 2', 'Player 3']);
   const [actionLog, setActionLog] = useState<Action[]>([]);
   const [currentTurn, setCurrentTurn] = useState<Player>('Player 1');
   const [spendAmount, setSpendAmount] = useState<string>('');
@@ -40,8 +40,7 @@ export default function Home() {
   const [playerIncomes, setPlayerIncomes] = useState<Record<Player, number>>({
     'Player 1': 0,
     'Player 2': 0,
-    'Player 3': 0,
-    'Player 4': 0
+    'Player 3': 0
   });
   const [expandedPlayer, setExpandedPlayer] = useState<Player | null>(null);
   const [showRoundInfo, setShowRoundInfo] = useState<boolean>(false);
