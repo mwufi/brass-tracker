@@ -91,6 +91,12 @@ export default function Home() {
     const amount = parseInt(spendAmount);
     if (isNaN(amount) || amount <= 0) return;
 
+    const currentPlayerMoney = getPlayerMoney(currentTurn);
+    if (amount > currentPlayerMoney + 10) {
+      alert(`You can't spend more than £${currentPlayerMoney + 10}!`);
+      return;
+    }
+
     const newAction: Action = {
       player: currentTurn,
       type: 'spend',
@@ -112,6 +118,10 @@ export default function Home() {
   };
 
   const handleIncomeChange = (player: Player, income: number) => {
+    if (income < -10) {
+      alert("Income can't be less than -10!");
+      return;
+    }
     setPlayerIncomes(prev => ({...prev, [player]: income}));
   };
 
