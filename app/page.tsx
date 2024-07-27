@@ -207,13 +207,12 @@ export default function Home() {
           </div>
 
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Spend Money</h2>
             <div className="flex">
               <Input
                 type="number"
                 value={spendAmount}
                 onChange={(e) => setSpendAmount(e.target.value)}
-                placeholder="Amount"
+                placeholder="spend money"
                 className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
               />
               <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Spend</Button>
@@ -221,13 +220,12 @@ export default function Home() {
           </div>
 
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
-            <h2 className="text-2xl font-semibold mb-4">Add Income</h2>
             <div className="flex">
               <Input
                 type="number"
                 value={incomeAmount}
                 onChange={(e) => setIncomeAmount(e.target.value)}
-                placeholder="Amount"
+                placeholder="income"
                 className="mr-2 flex-grow bg-[#F5DEB3] border-[#8B4513]"
               />
               <Button onClick={handleIncome} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Add Income</Button>
