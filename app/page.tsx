@@ -75,14 +75,14 @@ export default function Home() {
     }, 0);
   };
 
-  const getTotalPlayerSpent = (player: Player) => {
-    return actionLog.reduce((total, action) => {
-      if (action.player === player && action.type === 'spend') {
-        return total + action.amount;
-      }
-      return total;
-    }, 0);
-  };
+  // const getTotalPlayerSpent = (player: Player) => {
+  //   return actionLog.reduce((total, action) => {
+  //     if (action.player === player && action.type === 'spend') {
+  //       return total + action.amount;
+  //     }
+  //     return total;
+  //   }, 0);
+  // };
 
   const getTotalPlayerSpentInRound = (player: Player, round: number) => {
     return actionLog.reduce((total, action) => {
@@ -183,7 +183,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden relative">
         <Button
           onClick={handleEndTurn}
-          className="absolute top-4 right-4 z-10 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-sm px-3 py-1 rounded-full shadow-lg"
+          className="absolute top-4 right-4 z-10 bg-[#F5DEB3] text-[#8B4513] hover:bg-[#F0E0C0] border-2 border-[#8B4513] text-sm px-3 py-1 rounded-full shadow-lg"
         >
           End Turn
         </Button>
@@ -191,7 +191,9 @@ export default function Home() {
           {showRoundInfo && (
             <div className="absolute top-full left-0 right-0 bg-[#A0522D] p-4 rounded-b-lg shadow-md z-10">
               <p>Total spent this round: £{getTotalSpentThisRound()}</p>
-              <p>Player who spent the most: {getPlayerWhoSpentMost()}</p>
+              {turnOrder.map(player => (
+                <p key={player}>{player} spent: £{getPlayerSpentThisTurn(player)}</p>
+              ))}
               <p>Current turn order: {turnOrder.join(', ')}</p>
             </div>
           )}
@@ -209,6 +211,7 @@ export default function Home() {
               )} onClick={() => togglePlayerInfo(player)}>
                 <h3 className="text-xl font-semibold mb-2">{player}</h3>
                 <p className="text-3xl font-bold">£{getPlayerMoney(player)}</p>
+                <p className="text-sm text-gray-600">Spent this round: £{getTotalPlayerSpentInRound(player, currentRound)}</p>
                 <p className="text-sm text-gray-600">Income: £{playerIncomes[player]}</p>
                 {expandedPlayer === player && (
                   <div className="mt-4 bg-[#F5DEB3] p-2 rounded animate-expand">
