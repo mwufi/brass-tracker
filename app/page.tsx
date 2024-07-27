@@ -43,6 +43,8 @@ export default function Home() {
     'Player 4': 0
   });
   const [expandedPlayer, setExpandedPlayer] = useState<Player | null>(null);
+  const [showRoundInfo, setShowRoundInfo] = useState<boolean>(false);
+
   const togglePlayerInfo = (player: Player) => {
     setExpandedPlayer(expandedPlayer === player ? null : player);
   };
@@ -79,7 +81,7 @@ export default function Home() {
     setActionLog(prevLog => prevLog.slice(0, -1));
   };
 
-  const endRound = () => {
+  const onRoundEnd = () => {
     const incomeActions = players.map(player => ({
       player,
       type: 'income' as ActionType,
@@ -89,7 +91,7 @@ export default function Home() {
     setActionLog(prevLog => [...prevLog, ...incomeActions]);
 
     const playersBySpent = [...players].sort((a, b) =>
-      getPlayerSpentThisTurn(b) - getPlayerSpentThisTurn(a)
+      getPlayerSpentThisTurn(a) - getPlayerSpentThisTurn(b)
     );
     setTurnOrder(playersBySpent);
     setCurrentTurn(playersBySpent[0]);
@@ -138,7 +140,7 @@ export default function Home() {
     setCurrentTurn(turnOrder[nextIndex]);
 
     if (nextIndex === 0) {
-      endRound();
+      onRoundEnd();
     }
   };
 
@@ -150,17 +152,34 @@ export default function Home() {
     setPlayerIncomes(prev => ({ ...prev, [player]: income }));
   };
 
+  const getTotalSpentThisRound = () => {
+    return turnOrder.reduce((total, player) => total + getPlayerSpentThisTurn(player), 0);
+  };
+
+  const getPlayerWhoSpentMost = () => {
+    return turnOrder.reduce((maxPlayer, player) =>
+      getPlayerSpentThisTurn(player) > getPlayerSpentThisTurn(maxPlayer) ? player : maxPlayer
+    );
+  };
+
   return (
     <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden">
-        <header className="bg-[#8B4513] text-[#F5DEB3] p-6">
+        <header className="bg-[#8B4513] text-[#F5DEB3] p-6 relative cursor-pointer" onClick={() => setShowRoundInfo(!showRoundInfo)}>
           <h1 className="text-3xl font-bold">Brass: Lancashire Money Tracker</h1>
           <p className="text-xl">Round {currentRound} - {currentTurn}'s Turn</p>
+          {showRoundInfo && (
+            <div className="absolute top-full left-0 right-0 bg-[#A0522D] p-4 rounded-b-lg shadow-md z-10">
+              <p>Total spent this round: £{getTotalSpentThisRound()}</p>
+              <p>Player who spent the most: {getPlayerWhoSpentMost()}</p>
+              <p>Current turn order: {turnOrder.join(', ')}</p>
+            </div>
+          )}
         </header>
 
         <main className="p-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            {players.map(player => (
+            {turnOrder.map(player => (
               <div key={player} className={cx(
                 "p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer",
                 {
