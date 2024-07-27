@@ -106,9 +106,15 @@ export default function Home() {
     }));
     setActionLog(prevLog => [...prevLog, ...incomeActions]);
 
-    const playersBySpent = [...players].sort((a, b) =>
-      getTotalPlayerSpentInRound(a, currentRound) - getTotalPlayerSpentInRound(b, currentRound)
-    );
+    const playersBySpent = [...players].sort((a, b) => {
+      const spentA = getTotalPlayerSpentInRound(a, currentRound);
+      const spentB = getTotalPlayerSpentInRound(b, currentRound);
+      if (spentA === spentB) {
+        // If tie, preserve existing order in turnOrder
+        return turnOrder.indexOf(a) - turnOrder.indexOf(b);
+      }
+      return spentA - spentB; // Sort in descending order of spent amount
+    });
     setTurnOrder(playersBySpent);
     setCurrentTurn(playersBySpent[0]);
     setCurrentRound(prevRound => prevRound + 1);
