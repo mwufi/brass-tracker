@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-
 type Player = 'Player 1' | 'Player 2' | 'Player 3' | 'Player 4';
 type ActionType = 'spend' | 'income';
 
@@ -20,6 +19,14 @@ export default function Home() {
   const [actionLog, setActionLog] = useState<Action[]>([]);
   const [currentTurn, setCurrentTurn] = useState<Player>('Player 1');
   const [spendAmount, setSpendAmount] = useState<string>('');
+  const [currentRound, setCurrentRound] = useState<number>(1);
+  const [turnOrder, setTurnOrder] = useState<Player[]>(players);
+  const [playerIncomes, setPlayerIncomes] = useState<Record<Player, number>>({
+    'Player 1': 0,
+    'Player 2': 0,
+    'Player 3': 0,
+    'Player 4': 0
+  });
 
   const getPlayerMoney = (player: Player) => {
     return actionLog.reduce((total, action) => {
@@ -54,20 +61,19 @@ export default function Home() {
   };
 
   const endRound = () => {
-    // Add income actions here based on income markers
-    // For simplicity, let's assume each player gets 10 coins income
     const incomeActions = players.map(player => ({
       player,
       type: 'income' as ActionType,
-      amount: 10
+      amount: playerIncomes[player]
     }));
     setActionLog(prevLog => [...prevLog, ...incomeActions]);
 
-    // Rotate player order based on money spent
     const playersBySpent = [...players].sort((a, b) =>
       getPlayerSpentThisTurn(b) - getPlayerSpentThisTurn(a)
     );
+    setTurnOrder(playersBySpent);
     setCurrentTurn(playersBySpent[0]);
+    setCurrentRound(prevRound => prevRound + 1);
   };
 
   const handleSpend = () => {
@@ -82,11 +88,20 @@ export default function Home() {
 
     setActionLog(prevLog => [...prevLog, newAction]);
     setSpendAmount('');
+  };
 
-    // Move to next player
-    const currentIndex = players.indexOf(currentTurn);
-    const nextIndex = (currentIndex + 1) % players.length;
-    setCurrentTurn(players[nextIndex]);
+  const handleEndTurn = () => {
+    const currentIndex = turnOrder.indexOf(currentTurn);
+    const nextIndex = (currentIndex + 1) % turnOrder.length;
+    setCurrentTurn(turnOrder[nextIndex]);
+
+    if (nextIndex === 0) {
+      endRound();
+    }
+  };
+
+  const handleIncomeChange = (player: Player, income: number) => {
+    setPlayerIncomes(prev => ({...prev, [player]: income}));
   };
 
   return (
@@ -96,6 +111,7 @@ export default function Home() {
           <CardTitle>Brass: Lancashire Money Tracker</CardTitle>
         </CardHeader>
         <CardContent>
+          <p>Current Round: {currentRound}</p>
           <p>Current Turn: {currentTurn}</p>
           <div className="flex items-center mt-2">
             <Input
@@ -105,9 +121,28 @@ export default function Home() {
               placeholder="Enter amount to spend"
               className="mr-2"
             />
-            <Button onClick={handleSpend}>Spend</Button>
+            <Button onClick={handleSpend} className="mr-2">Spend</Button>
+            <Button onClick={handleEndTurn}>End Turn</Button>
           </div>
-          <Button onClick={endRound} className="mt-2">End Round</Button>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Player Incomes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {players.map(player => (
+            <div key={player} className="flex items-center justify-between mb-2">
+              <span>{player}:</span>
+              <Input
+                type="number"
+                value={playerIncomes[player]}
+                onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
+                className="w-20"
+              />
+            </div>
+          ))}
         </CardContent>
       </Card>
 
