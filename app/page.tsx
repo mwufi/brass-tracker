@@ -2,9 +2,20 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+
+// Critical information for gameplay:
+// - Current round
+// - Current player's turn
+// - Each player's current money
+// - Spend action
+// - End turn action
+//
+// Less critical information:
+// - Player incomes (only needed at end of round)
+// - Detailed action log
+// - Undo functionality (useful but not essential)
+
 type Player = 'Player 1' | 'Player 2' | 'Player 3' | 'Player 4';
 type ActionType = 'spend' | 'income';
 
@@ -105,90 +116,69 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Brass: Lancashire Money Tracker</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Current Round: {currentRound}</p>
-          <p>Current Turn: {currentTurn}</p>
-          <div className="flex items-center mt-2">
-            <Input
-              type="number"
-              value={spendAmount}
-              onChange={(e) => setSpendAmount(e.target.value)}
-              placeholder="Enter amount to spend"
-              className="mr-2"
-            />
-            <Button onClick={handleSpend} className="mr-2">Spend</Button>
-            <Button onClick={handleEndTurn}>End Turn</Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="bg-gray-100 min-h-screen p-4">
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <header className="bg-blue-600 text-white p-4">
+          <h1 className="text-2xl font-bold">Brass: Lancashire Money Tracker</h1>
+          <p className="text-lg">Round {currentRound} - {currentTurn}'s Turn</p>
+        </header>
 
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Player Incomes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {players.map(player => (
-            <div key={player} className="flex items-center justify-between mb-2">
-              <span>{player}:</span>
+        <main className="p-4">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Player Money</h2>
+            <div className="grid grid-cols-2 gap-2">
+              {players.map(player => (
+                <div key={player} className="bg-gray-200 p-2 rounded">
+                  <span className="font-medium">{player}:</span> £{getPlayerMoney(player)}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Spend Money</h2>
+            <div className="flex">
               <Input
                 type="number"
-                value={playerIncomes[player]}
-                onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
-                className="w-20"
+                value={spendAmount}
+                onChange={(e) => setSpendAmount(e.target.value)}
+                placeholder="Amount"
+                className="mr-2 flex-grow"
               />
+              <Button onClick={handleSpend} className="bg-green-500 text-white">Spend</Button>
             </div>
-          ))}
-        </CardContent>
-      </Card>
+          </div>
 
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Player Stats</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Player</TableHead>
-                <TableHead>Current Money</TableHead>
-                <TableHead>Spent This Turn</TableHead>
-                <TableHead>Total Spent</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {players.map(player => (
-                <TableRow key={player}>
-                  <TableCell>{player}</TableCell>
-                  <TableCell>{getPlayerMoney(player)}</TableCell>
-                  <TableCell>{getPlayerSpentThisTurn(player)}</TableCell>
-                  <TableCell>{getTotalPlayerSpent(player)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+          <Button onClick={handleEndTurn} className="w-full bg-blue-500 text-white mb-6">End Turn</Button>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Action Log</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="list-disc pl-5">
-            {actionLog.map((action, index) => (
-              <li key={index}>
-                {action.player} - {action.type}: {action.amount} coins
-              </li>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Player Incomes</h2>
+            {players.map(player => (
+              <div key={player} className="flex items-center mb-2">
+                <span className="mr-2">{player}:</span>
+                <Input
+                  type="number"
+                  value={playerIncomes[player]}
+                  onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
+                  className="w-20"
+                />
+              </div>
             ))}
-          </ul>
-          <Button onClick={undoLastAction} className="mt-2">Undo Last Action</Button>
-        </CardContent>
-      </Card>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Action Log</h2>
+            <ul className="bg-gray-100 p-2 rounded max-h-40 overflow-y-auto">
+              {actionLog.slice().reverse().map((action, index) => (
+                <li key={index} className="mb-1">
+                  {action.player} - {action.type}: £{action.amount}
+                </li>
+              ))}
+            </ul>
+            <Button onClick={undoLastAction} className="mt-2 bg-red-500 text-white">Undo Last Action</Button>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
