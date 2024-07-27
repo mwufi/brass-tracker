@@ -166,8 +166,6 @@ export default function Home() {
     <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden">
         <header className="bg-[#8B4513] text-[#F5DEB3] p-6 relative cursor-pointer" onClick={() => setShowRoundInfo(!showRoundInfo)}>
-          <h1 className="text-3xl font-bold">Brass: Lancashire Money Tracker</h1>
-          <p className="text-xl">Round {currentRound} - {currentTurn}'s Turn</p>
           {showRoundInfo && (
             <div className="absolute top-full left-0 right-0 bg-[#A0522D] p-4 rounded-b-lg shadow-md z-10">
               <p>Total spent this round: £{getTotalSpentThisRound()}</p>
@@ -217,9 +215,7 @@ export default function Home() {
               />
               <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Spend</Button>
             </div>
-          </div>
 
-          <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
             <div className="flex">
               <Input
                 type="tel"
