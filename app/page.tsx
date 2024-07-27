@@ -209,7 +209,7 @@ export default function Home() {
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
             <div className="flex">
               <Input
-                type="number"
+                type="tel"
                 value={spendAmount}
                 onChange={(e) => setSpendAmount(e.target.value)}
                 placeholder="spend money"
@@ -222,7 +222,7 @@ export default function Home() {
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
             <div className="flex">
               <Input
-                type="number"
+                type="tel"
                 value={incomeAmount}
                 onChange={(e) => setIncomeAmount(e.target.value)}
                 placeholder="income"
