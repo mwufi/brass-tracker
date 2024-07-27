@@ -84,6 +84,15 @@ export default function Home() {
     }, 0);
   };
 
+  const getTotalPlayerSpentInRound = (player: Player, round: number) => {
+    return actionLog.reduce((total, action) => {
+      if (action.player === player && action.type === 'spend' && action.round === round) {
+        return total + action.amount;
+      }
+      return total;
+    }, 0);
+  };
+
   const undoLastAction = () => {
     setActionLog(prevLog => prevLog.slice(0, -1));
   };
@@ -98,7 +107,7 @@ export default function Home() {
     setActionLog(prevLog => [...prevLog, ...incomeActions]);
 
     const playersBySpent = [...players].sort((a, b) =>
-      getPlayerSpentThisTurn(a) - getPlayerSpentThisTurn(b)
+      getTotalPlayerSpentInRound(a, currentRound) - getTotalPlayerSpentInRound(b, currentRound)
     );
     setTurnOrder(playersBySpent);
     setCurrentTurn(playersBySpent[0]);
