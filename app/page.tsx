@@ -218,7 +218,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold">{player}</h3>
                 <p className="text-2xl font-bold">£{getPlayerMoney(player)}</p>
                 <p className="text-md text-gray-600">Spent: £{getTotalPlayerSpentInRound(player, currentRound)}</p>
-                <p className="text-sm text-gray-600">Income: £{playerIncomes[player]}</p>
+                <p className="text-md text-gray-600">Income: £{playerIncomes[player]}</p>
                 {expandedPlayer === player && (
                   <div className="mt-4 bg-[#F5DEB3] p-2 rounded animate-expand">
                     <h4 className="font-semibold mb-2">Actions:</h4>
@@ -255,7 +255,7 @@ export default function Home() {
                 </div>
                 <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{spendAmount}</span>
               </div>
-              <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Spend</Button>
+              <Button onClick={handleSpend} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] py-6 text-lg">Spend</Button>
             </div>
 
             <div className="flex flex-col">
@@ -277,27 +277,27 @@ export default function Home() {
                 </div>
                 <span className="ml-2 min-w-[60px] text-center text-3xl font-bold">{incomeAmount}</span>
               </div>
-              <Button onClick={handleIncome} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Add Income</Button>
+              <Button onClick={handleIncome} className="bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] py-6 text-lg">Add Money</Button>
             </div>
           </div>
 
           <div className="bg-[#D2B48C] p-4 rounded-lg shadow-md mb-6">
             <h2 className="text-2xl font-semibold mb-4">Player Incomes</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
               {players.map(player => (
-                <div key={player} className="flex flex-col items-center">
-                  <span className="mb-2">{player}</span>
-                  <div className="flex items-center text-xl">
+                <div key={player} className="flex flex-row items-center justify-between w-full mb-2">
+                  <span className="mb-2 text-xl">{player}</span>
+                  <div className="flex items-center text-2xl">
                     <Button
                       onClick={() => handleIncomeChange(player, playerIncomes[player] - 1)}
-                      className="w-8 h-8 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-2xl"
+                      className="w-12 h-12 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-6xl"
                     >
                       -
                     </Button>
-                    <span className="mx-2 w-6 text-center">{playerIncomes[player]}</span>
+                    <span className="mx-2 w-10 text-center text-right">£{playerIncomes[player]}</span>
                     <Button
                       onClick={() => handleIncomeChange(player, playerIncomes[player] + 1)}
-                      className="w-8 h-8 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-xl"
+                      className="w-12 h-12 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-4xl"
                     >
                       +
                     </Button>
