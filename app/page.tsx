@@ -287,12 +287,21 @@ export default function Home() {
               {players.map(player => (
                 <div key={player} className="flex flex-col items-center">
                   <span className="mb-2">{player}</span>
-                  <Input
-                    type="number"
-                    value={playerIncomes[player]}
-                    onChange={(e) => handleIncomeChange(player, parseInt(e.target.value))}
-                    className="w-20 bg-[#F5DEB3] border-[#8B4513]"
-                  />
+                  <div className="flex items-center text-xl">
+                    <Button
+                      onClick={() => handleIncomeChange(player, playerIncomes[player] - 1)}
+                      className="w-8 h-8 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-2xl"
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2 w-6 text-center">{playerIncomes[player]}</span>
+                    <Button
+                      onClick={() => handleIncomeChange(player, playerIncomes[player] + 1)}
+                      className="w-8 h-8 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D] text-xl"
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -310,7 +319,7 @@ export default function Home() {
             <Button onClick={undoLastAction} className="mt-4 bg-[#8B4513] text-[#F5DEB3] hover:bg-[#A0522D]">Undo Last Action</Button>
           </div>
         </main>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
