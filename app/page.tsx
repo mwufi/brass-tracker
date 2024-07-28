@@ -186,10 +186,10 @@ export default function Home() {
 
   return (
     <div className="bg-[#8B4513] min-h-screen p-4 bg-opacity-80 bg-blend-overlay overflow-hidden" style={{ backgroundImage: "url('https://t4.ftcdn.net/jpg/00/77/67/75/360_F_77677518_JmjvLKvu9yQN8Sr8uKjkQEYMakzXgV3p.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="max-w-4xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden relative">
+      <div className="max-w-8xl mx-auto bg-[#F5DEB3] rounded-lg shadow-2xl overflow-hidden relative">
         <Button
           onClick={handleEndTurn}
-          className="absolute top-4 right-4 z-10 bg-[#F5DEB3] text-[#8B4513] hover:bg-[#F0E0C0] border-2 border-[#8B4513] text-sm px-3 py-1 rounded-full shadow-lg"
+          className="absolute top-8 right-8 z-10 bg-[#F5DEB3] text-[#8B4513] hover:bg-[#F0E0C0] border-4 border-[#8B4513] text-xl px-4 py-6 rounded-full shadow-xl"
         >
           End Turn
         </Button>
@@ -215,9 +215,9 @@ export default function Home() {
                   "bg-[#90EE90]": player === currentTurn
                 }
               )} onClick={() => togglePlayerInfo(player)}>
-                <h3 className="text-xl font-semibold mb-2">{player}</h3>
-                <p className="text-3xl font-bold">£{getPlayerMoney(player)}</p>
-                <p className="text-sm text-gray-600">Spent this round: £{getTotalPlayerSpentInRound(player, currentRound)}</p>
+                <h3 className="text-lg font-semibold">{player}</h3>
+                <p className="text-2xl font-bold">£{getPlayerMoney(player)}</p>
+                <p className="text-md text-gray-600">Spent: £{getTotalPlayerSpentInRound(player, currentRound)}</p>
                 <p className="text-sm text-gray-600">Income: £{playerIncomes[player]}</p>
                 {expandedPlayer === player && (
                   <div className="mt-4 bg-[#F5DEB3] p-2 rounded animate-expand">
