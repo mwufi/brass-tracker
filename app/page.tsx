@@ -52,6 +52,41 @@ export default function Home() {
     };
   }, []);
 
+  const [showNamePopup, setShowNamePopup] = useState<boolean>(true);
+  const [playerNames, setPlayerNames] = useState<Record<Player, string>>({
+    'Player 1': 'Player 1',
+    'Player 2': 'Player 2',
+    'Player 3': 'Player 3'
+  });
+
+  if (showNamePopup) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold mb-4">Set Player Names</h2>
+          {players.map((player) => (
+            <div key={player} className="mb-4">
+              <label htmlFor={`name-${player}`} className="block mb-2">{player}</label>
+              <input
+                id={`name-${player}`}
+                type="text"
+                value={playerNames[player]}
+                onChange={(e) => setPlayerNames(prev => ({ ...prev, [player]: e.target.value }))}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          ))}
+          <button
+            onClick={() => setShowNamePopup(false)}
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          >
+            Start Game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const togglePlayerInfo = (player: Player) => {
     setExpandedPlayer(expandedPlayer === player ? null : player);
   };
@@ -215,7 +250,7 @@ export default function Home() {
                   "bg-[#90EE90]": player === currentTurn
                 }
               )} onClick={() => togglePlayerInfo(player)}>
-                <h3 className="text-lg font-semibold">{player}</h3>
+                <h3 className="text-lg font-semibold">{playerNames[player]}</h3>
                 <p className="text-2xl font-bold">£{getPlayerMoney(player)}</p>
                 <p className="text-md text-gray-600">Spent: £{getTotalPlayerSpentInRound(player, currentRound)}</p>
                 <p className="text-md text-gray-600">Income: £{playerIncomes[player]}</p>
@@ -286,7 +321,7 @@ export default function Home() {
             <div>
               {players.map(player => (
                 <div key={player} className="flex flex-row items-center justify-between w-full mb-2">
-                  <span className="mb-2 text-xl">{player}</span>
+                  <span className="mb-2 text-xl">{playerNames[player]}</span>
                   <div className="flex items-center text-2xl">
                     <Button
                       onClick={() => handleIncomeChange(player, playerIncomes[player] - 1)}
